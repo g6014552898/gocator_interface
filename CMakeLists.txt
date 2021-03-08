@@ -55,7 +55,7 @@ LINK_DIRECTORIES(${PCL_LIBRARY_DIRS})
 ADD_DEFINITIONS(${PCL_DEFINITIONS})
 
 # Set GO_SDK include paths (That could be part of a FindGocator.cmake)
-SET(GO_SDK_4 /home/zyx/ZYX_platform/GO_SDK) # TODO: Should be an env variable!!
+SET(GO_SDK_4 /home/loganshi/GO_SDK) # TODO: Should be an env variable!!
 FIND_PATH(
     GOCATOR_INCLUDES
     NAMES GoSdk/GoSdk.h
@@ -70,11 +70,11 @@ INCLUDE_DIRECTORIES(${GOCATOR_INCLUDES} ${KAPI_INCLUDES})
 FIND_LIBRARY(
     GOCATOR_LIBRARIES
     NAMES GoSdk
-    PATHS ${GO_SDK_4}/lib/gnud/) 
+    PATHS ${GO_SDK_4}/lib/linux_x64/) 
 FIND_LIBRARY(
     KAPI_LIBRARIES
     NAMES kApi
-    PATHS ${GO_SDK_4}/lib/gnud/) 
+    PATHS ${GO_SDK_4}/lib/linux_x64/) 
 message(STATUS "Gocator Headers found at ${GOCATOR_INCLUDES}.")
 message(STATUS "Gocator Libraries found at ${GOCATOR_LIBRARIES}.")
 
