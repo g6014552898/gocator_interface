@@ -1,16 +1,28 @@
 #include "gocator_3100_node.h"
 
+void keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event,
+                       void* request_void)
+{
+    boost::shared_ptr<int> request = *static_cast<boost::shared_ptr<int> *> (request_void);
+    std::cout<<"request b4 keyboard"<<*request<<"\n";
+    if (event.getKeySym () == "space" && event.keyDown ())
+        *request = 1;
+    std::cout<<"request after keyboard"<<*request<<"\n";
+};
+
 Gocator3100Node::Gocator3100Node() :
 //     run_mode_(SNAPSHOT),
 //     g3100_camera_("192.168.1.10"), 
+    save_request(new int),
     nh_(ros::this_node::getName()),
     is_request_(false)
 {      
+    *save_request = 1;
     //set the subscriber
     snapshot_request_ = nh_.subscribe("snapshot_request", 1, &Gocator3100Node::snapshotRequestCallback, this);
     
     //set the point cloud publisher
-    snapshot_publisher_ = nh_.advertise<pcl::PointCloud<pcl::PointXYZ> >("gocator_snapshot", 1);
+    snapshot_publisher_ = nh_.advertise<pcl::PointCloud<pcl::PointXYZ> >("pcl_output", 1);
     
     //Set the fov marker publisher
     fov_publisher_ = nh_.advertise<visualization_msgs::Marker>("fov_markers",1);
@@ -34,6 +46,8 @@ Gocator3100Node::Gocator3100Node() :
     
     //configure according yaml params
     g3100_camera_->configure(capture_params_);
+
+    capture_counter_ = 1;
     
     //print
     std::cout << "ROS node Setings: " << std::endl; 
@@ -240,3 +254,53 @@ void Gocator3100Node::snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _
 //     else
 //         return false;
 // }
+
+void Gocator3100Node::saveShot()
+{
+    *save_request = 0;
+    ros::Time ts;
+
+    //Get snapshot from camera and publish the point cloud
+    if ( g3100_camera_->getSingleSnapshot(cloud_) == 1 )
+    //if ( g3100_camera_.getSingleSnapshotFake(cloud_) == 1 )
+    {
+        PointCloudT::Ptr cloud_tmp (new PointCloudT);
+        *cloud_tmp = cloud_;
+        
+        pcl::visualization::PCLVisualizer viewer("Saver");
+        int v1(0);
+        viewer.createViewPort (0.0, 0.0, 0.5, 1.0, v1);
+        
+        pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud_tmp, (int) 255, (int) 255, (int) 255);
+    
+        // Original point cloud is white
+        viewer.addPointCloud (cloud_tmp,cloud_in_color_h,"cloud_in_v1",v1);
+        viewer.setBackgroundColor (1.0, 1.0, 1.0);
+        viewer.setCameraPosition (-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
+        viewer.setSize (1280, 1024);  // Visualiser window size
+        // Register keyboard callback :
+        viewer.registerKeyboardCallback (&keyboardEventOccurred, (void*) &(this->save_request));
+
+        while (!viewer.wasStopped())
+        {
+            if (*save_request == 1)
+            {
+                ts = ros::Time::now();
+                cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3100::Device class
+                cloud_.header.frame_id = frame_name_;
+                std::stringstream ss;
+                ss.str("");
+                ss << capture_counter_;
+                std::string path = ros::package::getPath("gocator_publisher");
+                pcl::io::savePLYFile (path + "/model/test/"+ ss.str() +".ply", cloud_); 
+                capture_counter_++;
+            }
+            viewer.spinOnce ();
+            viewer.updatePointCloud (cloud_tmp, cloud_in_color_h);
+        }
+    }
+    else
+    {
+        std::cout << "Gocator3100Node::publish(): Error with point cloud snapshot acquisition" << std::endl;
+    }
+}

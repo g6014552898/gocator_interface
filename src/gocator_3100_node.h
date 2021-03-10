@@ -3,13 +3,18 @@
 
 //std
 #include <iostream>
+#include <string>
 
 //this package
 #include "lib/src/gocator3100.h"
 
 //ros dependencies
 #include <ros/ros.h>
+#include <ros/package.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/point_types.h>
 #include <pcl_ros/point_cloud.h> //PCL-ROS interoperability
+#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl_conversions/pcl_conversions.h> //conversions from/to PCL/ROS
 #include <std_msgs/Empty.h> //snapshot request
 #include <visualization_msgs/Marker.h> //publish bounds of gocator field of view
@@ -20,7 +25,11 @@
 #include <gocator_3100/gocator_3100_paramsConfig.h>
 
 //enum run mode
-enum RunMode {SNAPSHOT=0,PUBLISHER};
+enum RunMode {SNAPSHOT=0,PUBLISHER,SAVER};
+
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
+
 
 /** \brief Gocator3100 ROS wrapping class
  * 
@@ -51,7 +60,7 @@ class Gocator3100Node
         ros::Publisher fov_publisher_; 
         
         //A pcl point cloud, used to get data and publish it
-        pcl::PointCloud<pcl::PointXYZ> cloud_; 
+        PointCloudT cloud_; 
 
         //Marker message bounding the camera field of view
         visualization_msgs::Marker fov_marker_msg_;
@@ -67,6 +76,8 @@ class Gocator3100Node
         std::string frame_name_; //name of the frame of references with respect cloud are published
         RunMode run_mode_;//run mode: The node acts as a server, or a continuous pcl publisher
         bool fov_viz_; // enable field of view visualization
+
+        int capture_counter_;
                 
         //camera device parameters
         Gocator3100::CaptureParams capture_params_;
@@ -102,6 +113,10 @@ class Gocator3100Node
         //Service callback implementing the point cloud snapshot
         //bool pointCloudSnapshotService(gocator_3100::PointCloudAsService::Request  & _request, gocator_3100::PointCloudAsService::Response & _reply);
         
+        void saveShot();
+
+        boost::shared_ptr<int> save_request;
+
     protected: 
         //snapshot request callback
         void snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _msg);

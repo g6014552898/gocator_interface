@@ -7,7 +7,7 @@
     <!-- User Args  -->
     <arg name="rviz" default="true" doc="rviz visualization or not"/>
     <arg name="model_tf" default="false" doc="3D model visualization and tf"/>
-    <arg name="config_file" default="$(find gocator_3100)/config/gocator_3100_snapshot.yaml" doc="3D model visualization and tf"/>
+    <arg name="config_file" default="$(find gocator_3100)/config/gocator_3100_publisher.yaml" doc="3D model visualization and tf"/>
     <arg name="model" default="gocator_3109_example" doc="Select among available models: gocator_3109_example or gocator_example" />
 
     <!--3D model as a robot robot description and tf-->
