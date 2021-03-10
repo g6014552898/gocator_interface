@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
-<!-- Launches gocator_3100 acquisition component, and visualization according rviz param  -->
+<!-- Launches gocator_3200 acquisition component, and visualization according rviz param  -->
 
 <launch>
 
     <!-- User Args  -->
     <arg name="rviz" default="true" doc="rviz visualization or not"/>
     <arg name="model_tf" default="false" doc="3D model visualization and tf"/>
-    <arg name="config_file" default="$(find gocator_3100)/config/gocator_3100_publisher.yaml" doc="3D model visualization and tf"/>
+    <arg name="config_file" default="$(find gocator_3200)/config/gocator_3200_publisher.yaml" doc="3D model visualization and tf"/>
     <arg name="model" default="gocator_3109_example" doc="Select among available models: gocator_3109_example or gocator_example" />
 
     <!--3D model as a robot robot description and tf-->
@@ -16,7 +16,7 @@
         <!-- Load robot description -->
         <param 
             name="robot_description" 
-            command="$(find xacro)/xacro --inorder $(find gocator_3100)/urdf/$(arg model).urdf.xacro"/>
+            command="$(find xacro)/xacro --inorder $(find gocator_3200)/urdf/$(arg model).urdf.xacro"/>
             
         <!-- Run joint state publisher (Gets robot_description from parameter server)-->
         <node 
@@ -34,13 +34,13 @@
         </node>
     </group>
     
-    <!-- goactor_3100 node -->
+    <!-- goactor_3200 node -->
     <node   
-        pkg="gocator_3100"
-        type="gocator_3100"
-        name="gocator_3100"
+        pkg="gocator_3200"
+        type="gocator_3200"
+        name="gocator_3200"
         output="screen">
-<!--         <rosparam command="load" file="$(find gocator_3100)/config/gocator_3100_params.yaml"/> -->
+<!--         <rosparam command="load" file="$(find gocator_3200)/config/gocator_3200_params.yaml"/> -->
         <rosparam command="load" file="$(arg config_file)"/>
     </node>      
 

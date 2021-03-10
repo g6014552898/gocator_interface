@@ -1,14 +1,14 @@
 //ros dependencies
-#include "gocator_3100_node.h"
+#include "gocator_3200_node.h"
 
 //node main
 int main(int argc, char **argv)
 {
   //init ros
-  ros::init(argc, argv, "gocator_3100_node");
+  ros::init(argc, argv, "gocator_3200_node");
 
   //create ros wrapper object
-  Gocator3100Node gocator;
+  Gocator3200Node gocator;
 
   //set node loop rate
   ros::Rate loop_rate(gocator.rate());

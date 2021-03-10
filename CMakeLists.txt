@@ -7,7 +7,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 # Project name and the type of project
-PROJECT(gocator_3100)
+PROJECT(gocator_3200)
 message(STATUS "Executig CMakeLists of project  ${PROJECT_NAME}.")
 
 # DEBUG/RELEASE
@@ -83,16 +83,16 @@ include_directories(src/ src/lib/src/ ${catkin_INCLUDE_DIRS})
 
 # Set source files for the library
 SET(SRCS_LIB 
-    src/lib/src/gocator3100.cpp)
+    src/lib/src/gocator3200.cpp)
     
 # Set header files for the library
 SET(HDRS_LIB 
-    src/lib/src/gocator3100.h)
+    src/lib/src/gocator3200.h)
 
 # Set source files for the ROS node
 SET(SRCS_NODE 
-    src/gocator_3100_node.cpp
-    src/gocator_3100_node_main.cpp
+    src/gocator_3200_node.cpp
+    src/gocator_3200_node_main.cpp
 )
     
 # add_service_files(
@@ -108,7 +108,7 @@ SET(SRCS_NODE
 # )
 
 #dynamic reconfigure cfg file
-generate_dynamic_reconfigure_options(cfg/gocator_3100_params.cfg)
+generate_dynamic_reconfigure_options(cfg/gocator_3200_params.cfg)
 
 ## The catkin_package macro generates cmake config files for your package
 catkin_package(

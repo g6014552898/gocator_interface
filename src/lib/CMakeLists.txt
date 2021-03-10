@@ -9,7 +9,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 # Project name and the type of project
-PROJECT(gocator_3100)
+PROJECT(gocator_3200)
 message(STATUS "Executig CMakeLists of project  ${PROJECT_NAME}.")
 
 # DEBUG/RELEASE
@@ -68,11 +68,11 @@ FIND_LIBRARY(
 
 # Set source files 
 SET(SRCS 
-	src/gocator3100.cpp)
+	src/gocator3200.cpp)
 
 # Set header files 
 SET(HDRS 
-	src/gocator3100.h)
+	src/gocator3200.h)
 
 #Build library	
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SRCS})

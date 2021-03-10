@@ -1,12 +1,12 @@
-#ifndef gocator_3100_node_H
-#define gocator_3100_node_H
+#ifndef gocator_3200_node_H
+#define gocator_3200_node_H
 
 //std
 #include <iostream>
 #include <string>
 
 //this package
-#include "lib/src/gocator3100.h"
+#include "lib/src/gocator3200.h"
 
 //ros dependencies
 #include <ros/ros.h>
@@ -18,11 +18,11 @@
 #include <pcl_conversions/pcl_conversions.h> //conversions from/to PCL/ROS
 #include <std_msgs/Empty.h> //snapshot request
 #include <visualization_msgs/Marker.h> //publish bounds of gocator field of view
-// #include "gocator_3100/PointCloudAsService.h" //custom "snapshot" service
+// #include "gocator_3200/PointCloudAsService.h" //custom "snapshot" service
 // #include <sensor_msgs/PointCloud2.h> 
 
 //ROS dynamic configure
-#include <gocator_3100/gocator_3100_paramsConfig.h>
+#include <gocator_3200/gocator_3200_paramsConfig.h>
 
 //enum run mode
 enum RunMode {SNAPSHOT=0,PUBLISHER,SAVER};
@@ -31,21 +31,21 @@ typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
 
-/** \brief Gocator3100 ROS wrapping class
+/** \brief Gocator3200 ROS wrapping class
  * 
- * Gocator3100 ROS wrapping class
+ * Gocator3200 ROS wrapping class
  * 
  * Two running modes:
  *    * Snapshot upon request
  *    * Continuous point cloud publisher (not yet implemented) 
  * 
  **/
-class Gocator3100Node
+class Gocator3200Node
 {
     protected:
                         
         //Device object with HW API
-        Gocator3100::Device *g3100_camera_;
+        Gocator3200::Device *g3200_camera_;
         
         //ros node handle
         ros::NodeHandle nh_;
@@ -80,14 +80,14 @@ class Gocator3100Node
         int capture_counter_;
                 
         //camera device parameters
-        Gocator3100::CaptureParams capture_params_;
+        Gocator3200::CaptureParams capture_params_;
         
     public:
         //constructor
-        Gocator3100Node();
+        Gocator3200Node();
         
         //destructor
-        ~Gocator3100Node();
+        ~Gocator3200Node();
         
         //returns run_mode_
         RunMode runMode() const;
@@ -111,7 +111,7 @@ class Gocator3100Node
         bool isFovViz() const;
                         
         //Service callback implementing the point cloud snapshot
-        //bool pointCloudSnapshotService(gocator_3100::PointCloudAsService::Request  & _request, gocator_3100::PointCloudAsService::Response & _reply);
+        //bool pointCloudSnapshotService(gocator_3200::PointCloudAsService::Request  & _request, gocator_3200::PointCloudAsService::Response & _reply);
         
         void saveShot();
 

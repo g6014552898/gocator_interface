@@ -1,4 +1,4 @@
-#include "gocator_3100_node.h"
+#include "gocator_3200_node.h"
 
 void keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event,
                        void* request_void)
@@ -10,16 +10,16 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event,
     std::cout<<"request after keyboard"<<*request<<"\n";
 };
 
-Gocator3100Node::Gocator3100Node() :
+Gocator3200Node::Gocator3200Node() :
 //     run_mode_(SNAPSHOT),
-//     g3100_camera_("192.168.1.10"), 
+//     g3200_camera_("192.168.1.10"), 
     save_request(new int),
     nh_(ros::this_node::getName()),
     is_request_(false)
 {      
     *save_request = 1;
     //set the subscriber
-    snapshot_request_ = nh_.subscribe("snapshot_request", 1, &Gocator3100Node::snapshotRequestCallback, this);
+    snapshot_request_ = nh_.subscribe("snapshot_request", 1, &Gocator3200Node::snapshotRequestCallback, this);
     
     //set the point cloud publisher
     snapshot_publisher_ = nh_.advertise<pcl::PointCloud<pcl::PointXYZ> >("pcl_output", 1);
@@ -28,7 +28,7 @@ Gocator3100Node::Gocator3100Node() :
     fov_publisher_ = nh_.advertise<visualization_msgs::Marker>("fov_markers",1);
     
     //set the server
-    //pcl_server_ = nh_.advertiseService("pcl_snapshot", &Gocator3100Node::pointCloudSnapshotService, this);
+    //pcl_server_ = nh_.advertiseService("pcl_snapshot", &Gocator3200Node::pointCloudSnapshotService, this);
 
     //Read params from the yaml configuration file
     std::string ip_addr;
@@ -42,10 +42,10 @@ Gocator3100Node::Gocator3100Node() :
     fov_viz_ = true; //TODO: get it from param server
     
     //create a device object
-    g3100_camera_ = new Gocator3100::Device(ip_addr); 
+    g3200_camera_ = new Gocator3200::Device(ip_addr); 
     
     //configure according yaml params
-    g3100_camera_->configure(capture_params_);
+    g3200_camera_->configure(capture_params_);
 
     capture_counter_ = 1;
     
@@ -56,47 +56,47 @@ Gocator3100Node::Gocator3100Node() :
     std::cout << "\tframe name: \t" << frame_name_ << std::endl;
 }
 
-Gocator3100Node::~Gocator3100Node()
+Gocator3200Node::~Gocator3200Node()
 {
-    delete g3100_camera_; 
+    delete g3200_camera_; 
 }
 
-RunMode Gocator3100Node::runMode() const
+RunMode Gocator3200Node::runMode() const
 {
     return run_mode_;
 }
 
-bool Gocator3100Node::isRequest() const
+bool Gocator3200Node::isRequest() const
 {
     return is_request_;
 }
 
-void Gocator3100Node::resetRequest()
+void Gocator3200Node::resetRequest()
 {
     is_request_ = false; 
 }
 
-void Gocator3100Node::publish()
+void Gocator3200Node::publish()
 {    
     ros::Time ts;
     
     //Get snapshot from camera and publish the point cloud
-    if ( g3100_camera_->getSingleSnapshot(cloud_) == 1 )
-    //if ( g3100_camera_.getSingleSnapshotFake(cloud_) == 1 )
+    if ( g3200_camera_->getSingleSnapshot(cloud_) == 1 )
+    //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
     {
         ts = ros::Time::now();
-        cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3100::Device class
+        cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
         cloud_.header.frame_id = frame_name_; 
         snapshot_publisher_.publish(cloud_);
     }
     else
     {
-        std::cout << "Gocator3100Node::publish(): Error with point cloud snapshot acquisition" << std::endl;
+        std::cout << "Gocator3200Node::publish(): Error with point cloud snapshot acquisition" << std::endl;
     }
         
 }
 
-void Gocator3100Node::publish_fov()
+void Gocator3200Node::publish_fov()
 {
     //fill and publish the field of view wires
     fov_marker_msg_.header.stamp = ros::Time::now(); 
@@ -220,22 +220,22 @@ void Gocator3100Node::publish_fov()
     fov_publisher_.publish(fov_marker_msg_);
 }
 
-double Gocator3100Node::rate() const
+double Gocator3200Node::rate() const
 {
     return rate_;
 }
 
-bool Gocator3100Node::isFovViz() const
+bool Gocator3200Node::isFovViz() const
 {
     return fov_viz_;
 }
 
-void Gocator3100Node::snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _msg)
+void Gocator3200Node::snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _msg)
 {
     is_request_ = true;
 }
                 
-// bool Gocator3100Node::pointCloudSnapshotService(gocator_3100::PointCloudAsService::Request  & _request, gocator_3100::PointCloudAsService::Response & _reply)
+// bool Gocator3200Node::pointCloudSnapshotService(gocator_3200::PointCloudAsService::Request  & _request, gocator_3200::PointCloudAsService::Response & _reply)
 // {
 //     //create a pcl point cloud
 //     pcl::PointCloud<pcl::PointXYZ> cloud; 
@@ -243,10 +243,10 @@ void Gocator3100Node::snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _
 //     std::cout << "Processing service request!" << std::endl;
 //     
 //     //call gocator 
-//     //if ( g3100_camera_.getSingleSnapshot(cloud) == 1 )
-//     if ( g3100_camera_.getSingleSnapshotFake(cloud) == 1 )
+//     //if ( g3200_camera_.getSingleSnapshot(cloud) == 1 )
+//     if ( g3200_camera_.getSingleSnapshotFake(cloud) == 1 )
 //     {
-//         _reply.pcloud.header.frame_id = "gocator_3100";
+//         _reply.pcloud.header.frame_id = "gocator_3200";
 //         _reply.pcloud.header.stamp = ros::Time::now();
 //         pcl::toROSMsg(cloud,_reply.pcloud);
 //         return true;
@@ -255,14 +255,14 @@ void Gocator3100Node::snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _
 //         return false;
 // }
 
-void Gocator3100Node::saveShot()
+void Gocator3200Node::saveShot()
 {
     *save_request = 0;
     ros::Time ts;
 
     //Get snapshot from camera and publish the point cloud
-    if ( g3100_camera_->getSingleSnapshot(cloud_) == 1 )
-    //if ( g3100_camera_.getSingleSnapshotFake(cloud_) == 1 )
+    if ( g3200_camera_->getSingleSnapshot(cloud_) == 1 )
+    //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
     {
         PointCloudT::Ptr cloud_tmp (new PointCloudT);
         *cloud_tmp = cloud_;
@@ -286,7 +286,7 @@ void Gocator3100Node::saveShot()
             if (*save_request == 1)
             {
                 ts = ros::Time::now();
-                cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3100::Device class
+                cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
                 cloud_.header.frame_id = frame_name_;
                 std::stringstream ss;
                 ss.str("");
@@ -301,6 +301,6 @@ void Gocator3100Node::saveShot()
     }
     else
     {
-        std::cout << "Gocator3100Node::publish(): Error with point cloud snapshot acquisition" << std::endl;
+        std::cout << "Gocator3200Node::publish(): Error with point cloud snapshot acquisition" << std::endl;
     }
 }

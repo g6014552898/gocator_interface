@@ -3,8 +3,8 @@
 //PCL visualiser
 #include <pcl/visualization/pcl_visualizer.h>
 
-//Gocator3100 Lib
-#include "../gocator3100.h"
+//Gocator3200 Lib
+#include "../gocator3200.h"
 
 //constants
 #define SENSOR_IP "192.168.1.10"
@@ -13,10 +13,10 @@
 int main(int argc, char **argv)
 {
 	//gocator camera
-	Gocator3100::Device camera(SENSOR_IP);
+	Gocator3200::Device camera(SENSOR_IP);
     
     //configure camera (exposure and spacing)
-    Gocator3100::CaptureParams capture_params;
+    Gocator3200::CaptureParams capture_params;
     capture_params.exposure_time_ = 31000; //useconds
     capture_params.spacing_interval_ = 0.2; //mm
     camera.configure(capture_params);

@@ -1,7 +1,7 @@
 //open the Gocator camera, get snapshots each 5 seconds and read temperature and health
 
-//Gocator3100 Lib
-#include "../gocator3100.h"
+//Gocator3200 Lib
+#include "../gocator3200.h"
 
 //std 
 #include <cstdlib>
@@ -28,11 +28,11 @@ int main(int argc, char **argv)
     unsigned int num_iters = (unsigned int)atoi(argv[1]);
     
     //gocator camera
-    Gocator3100::Device camera(SENSOR_IP);
+    Gocator3200::Device camera(SENSOR_IP);
     
     //configure camera (exposutre and spacing)
-    Gocator3100::CaptureParams capture_params;
-    capture_params.exposure_time_ = 31000; //useconds
+    Gocator3200::CaptureParams capture_params;
+    capture_params.exposure_time_ = 32000; //useconds
     capture_params.spacing_interval_ = 0.1; //mm
     camera.configure(capture_params);
     

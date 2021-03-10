@@ -1,5 +1,5 @@
 
-#*************** gocator_3100 node and device parameters ************************
+#*************** gocator_3200 node and device parameters ************************
 
 #IP address of the camera device
 ip_address: "192.168.1.10"
