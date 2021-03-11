@@ -260,26 +260,20 @@ void Gocator3200Node::saveShot()
     *save_request = 0;
     ros::Time ts;
 
+    PointCloudT::Ptr cloud_tmp (new PointCloudT);
     //Get snapshot from camera and publish the point cloud
-    if ( g3200_camera_->getSingleSnapshot(cloud_) == 1 )
+    if ( g3200_camera_->getSingleSnapshot(*cloud_tmp) == 1 )
     //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
-    {
-        PointCloudT::Ptr cloud_tmp (new PointCloudT);
-        *cloud_tmp = cloud_;
-        
+    {   
         pcl::visualization::PCLVisualizer viewer("Saver");
-        int v1(0);
-        viewer.createViewPort (0.0, 0.0, 0.5, 1.0, v1);
         
         pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud_tmp, (int) 255, (int) 255, (int) 255);
     
         // Original point cloud is white
-        viewer.addPointCloud (cloud_tmp,cloud_in_color_h,"cloud_in_v1",v1);
-        viewer.setBackgroundColor (1.0, 1.0, 1.0);
-        viewer.setCameraPosition (-3.68332, 2.94092, 5.71266, 0.289847, 0.921947, -0.256907, 0);
-        viewer.setSize (1280, 1024);  // Visualiser window size
+        viewer.addPointCloud (cloud_tmp,cloud_in_color_h,"cloud_in_v1");
+        viewer.addCoordinateSystem(10);
         // Register keyboard callback :
-        viewer.registerKeyboardCallback (&keyboardEventOccurred, (void*) &(this->save_request));
+        viewer.registerKeyboardCallback (&keyboardEventOccurred, (void*) &save_request);
 
         while (!viewer.wasStopped())
         {
@@ -295,9 +289,11 @@ void Gocator3200Node::saveShot()
                 pcl::io::savePLYFile (path + "/model/test/"+ ss.str() +".ply", cloud_); 
                 capture_counter_++;
             }
-            viewer.spinOnce ();
-            viewer.updatePointCloud (cloud_tmp, cloud_in_color_h);
+            viewer.spinOnce (100);
         }
+        viewer.updatePointCloud (cloud_tmp, cloud_in_color_h);
+        viewer.removeAllPointClouds ();
+        viewer.close ();
     }
     else
     {

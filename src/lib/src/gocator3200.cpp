@@ -218,7 +218,7 @@ int Gocator3200::Device::getCurrentSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_
 
 int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud)
 {
-	pcl::PointCloud<pcl::PointXYZ> tmp_cloud;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	GoDataSet dataset = kNULL;
 	GoStamp *stamp = kNULL;
 	GoDataMsg dataObj;
@@ -293,9 +293,9 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 
 
 						//resize the point cloud
-						tmp_cloud.height = row_count;
-						tmp_cloud.width = width;
-						tmp_cloud.resize(row_count*width);
+						tmp_cloud->height = row_count;
+						tmp_cloud->width = width;
+						tmp_cloud->resize(row_count*width);
 
 						std::vector<int> index;
 						//run over all rows
@@ -308,17 +308,17 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 							for (unsigned int jj = 0; jj < width; jj++)
 							{
 								//set xy in meters. x component inverted to fulfill right-handed frame (Gocator is left-handed!)
-								tmp_cloud.points.at(ii*width+jj).x = -1*(xOffset + xResolution*jj);
-								tmp_cloud.points.at(ii*width+jj).y =  1*(yOffset + yResolution*ii);
+								tmp_cloud->points.at(ii*width+jj).x = -1*(xOffset + xResolution*jj);
+								tmp_cloud->points.at(ii*width+jj).y =  1*(yOffset + yResolution*ii);
 
 								//set z
 								if (data[jj] != INVALID_RANGE_16BIT )
 								{
-									tmp_cloud.points.at(ii*width+jj).z = 1*(zOffset + zResolution*data[jj]);
+									tmp_cloud->points.at(ii*width+jj).z = 1*(zOffset + zResolution*data[jj]);
 									index.push_back(ii*width+jj);
 								}
 								else
-									tmp_cloud.points.at(ii*width+jj).z = 1*(INVALID_RANGE_DOUBLE);
+									tmp_cloud->points.at(ii*width+jj).z = 1*(INVALID_RANGE_DOUBLE);
 
 								// std::cout<<" "<<tmp_cloud.points.at(ii*width+jj).x<<" "<<tmp_cloud.points.at(ii*width+jj).y
 								// <<" "<<tmp_cloud.points.at(ii*width+jj).z<<" "<<INVALID_RANGE_DOUBLE<<std::endl;
@@ -326,8 +326,9 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 						}
 
 						real_data_arrived=true;
-						pcl::copyPointCloud(tmp_cloud, index, _p_cloud);
-						std::cout<<"point  size: "<<tmp_cloud.points.size()<<std::endl;
+						_p_cloud = *tmp_cloud;
+
+						std::cout<<"point  size: "<<tmp_cloud->points.size()<<std::endl;
 						std::cout<<"point  size: "<<_p_cloud.points.size()<<std::endl;
 					}
 					break;
