@@ -176,13 +176,14 @@ void Gocator3200Node::saveShot()
                     ss << capture_counter_;
                     std::string path = ros::package::getPath("gocator_publisher");
                     std::string file_name = path + "/model/test/"+ ss.str() +".ply";
-                    if( pcl::io::savePLYFile (file_name, *cloud_tmp) != 0)
+                    if( pcl::io::savePLYFileASCII (file_name, *cloud_tmp) != 0)
                     {
                         std::cout<<"failed to  save "<<file_name<<"\n";
                     }else{
                         std::cout<<file_name<<" saved successflly!\n";
                         capture_counter_++;
                         *save_request = WAIT;
+                        is_quit = true;
                     }
                     break;
                 }
@@ -199,7 +200,6 @@ void Gocator3200Node::saveShot()
         }
         std::cout<<"out of loop\n";
         viewer->removeAllPointClouds ();
-        std::cout<<"viewer closed\n";
     }
     else
     {

@@ -34,36 +34,36 @@ Gocator3200::Device::Device(const std::string & _ip_address)
 	kIpAddress_Parse(&ipAddress, _ip_address.c_str());
 	if ((status = GoSystem_FindSensorByIpAddress(go_system_, &ipAddress, &go_sensor_)) != kOK)
 	{
-		std::cout << "Error: GoSystem_FindSensorByIpAddress: " << status << std::endl;
-		std::cout
-		<<"error code defined in kStatus :			 \n"
-		<<"#define kERROR_STATE               (-1000)\n"
-		<<"#define kERROR_NOT_FOUND           (-999) \n"
-		<<"#define kERROR_COMMAND             (-998) \n"
-		<<"#define kERROR_PARAMETER           (-997) \n"
-		<<"#define kERROR_UNIMPLEMENTED       (-996) \n"
-		<<"#define kERROR_MEMORY              (-994) \n"
-		<<"#define kERROR_TIMEOUT             (-993) \n"
-		<<"#define kERROR_INCOMPLETE          (-992) \n"
-		<<"#define kERROR_STREAM              (-991) \n"
-		<<"#define kERROR_CLOSED              (-990) \n"
-		<<"#define kERROR_VERSION             (-989) \n"
-		<<"#define kERROR_ABORT               (-988) \n"
-		<<"#define kERROR_ALREADY_EXISTS      (-987) \n"
-		<<"#define kERROR_NETWORK             (-986) \n"
-		<<"#define kERROR_HEAP                (-985) \n"
-		<<"#define kERROR_FORMAT              (-984) \n"
-		<<"#define kERROR_READ_ONLY           (-983) \n"
-		<<"#define kERROR_WRITE_ONLY          (-982) \n"
-		<<"#define kERROR_BUSY                (-981) \n"
-		<<"#define kERROR_CONFLICT            (-980) \n"
-		<<"#define kERROR_OS                  (-979) \n"
-		<<"#define kERROR_DEVICE              (-978) \n"
-		<<"#define kERROR_FULL                (-977) \n"
-		<<"#define kERROR_IN_PROGRESS         (-976) \n"
-		<<"#define kERROR                     (0)	 \n"
-		<<"#define kOK                        (1) 	 \n"
-		<<std::endl;
+		// std::cout << "Error: GoSystem_FindSensorByIpAddress: " << status << std::endl;
+		// std::cout
+		// <<"error code defined in kStatus :			 \n"
+		// <<"#define kERROR_STATE               (-1000)\n"
+		// <<"#define kERROR_NOT_FOUND           (-999) \n"
+		// <<"#define kERROR_COMMAND             (-998) \n"
+		// <<"#define kERROR_PARAMETER           (-997) \n"
+		// <<"#define kERROR_UNIMPLEMENTED       (-996) \n"
+		// <<"#define kERROR_MEMORY              (-994) \n"
+		// <<"#define kERROR_TIMEOUT             (-993) \n"
+		// <<"#define kERROR_INCOMPLETE          (-992) \n"
+		// <<"#define kERROR_STREAM              (-991) \n"
+		// <<"#define kERROR_CLOSED              (-990) \n"
+		// <<"#define kERROR_VERSION             (-989) \n"
+		// <<"#define kERROR_ABORT               (-988) \n"
+		// <<"#define kERROR_ALREADY_EXISTS      (-987) \n"
+		// <<"#define kERROR_NETWORK             (-986) \n"
+		// <<"#define kERROR_HEAP                (-985) \n"
+		// <<"#define kERROR_FORMAT              (-984) \n"
+		// <<"#define kERROR_READ_ONLY           (-983) \n"
+		// <<"#define kERROR_WRITE_ONLY          (-982) \n"
+		// <<"#define kERROR_BUSY                (-981) \n"
+		// <<"#define kERROR_CONFLICT            (-980) \n"
+		// <<"#define kERROR_OS                  (-979) \n"
+		// <<"#define kERROR_DEVICE              (-978) \n"
+		// <<"#define kERROR_FULL                (-977) \n"
+		// <<"#define kERROR_IN_PROGRESS         (-976) \n"
+		// <<"#define kERROR                     (0)	 \n"
+		// <<"#define kOK                        (1) 	 \n"
+		// <<std::endl;
 		status_ = DEVICE_NOT_FOUND;
 		exit(status);
 	}
@@ -326,7 +326,7 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 						}
 
 						real_data_arrived=true;
-						_p_cloud = *tmp_cloud;
+						
 					}
 					break;
 				}
@@ -338,6 +338,19 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 	}
 	//stop Gocator acquisition
 	this->stop();
+
+	PointCloudT::Ptr cloud_filtered (new PointCloudT);
+
+	pcl::ConditionAnd<PointT>::Ptr range_cond(new pcl::ConditionAnd<PointT> ());
+	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::GT,-14.0)));
+	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::LT,14.0)));
+	pcl::ConditionalRemoval<PointT> condrem;
+	condrem.setCondition(range_cond);
+	condrem.setInputCloud(tmp_cloud);
+	condrem.setKeepOrganized(false);
+	condrem.filter(*cloud_filtered);
+
+	_p_cloud = *cloud_filtered;
 	if (_p_cloud.points.size() == 0)
 	{
 		std::cout<<"_p_cloud empty, may need to adjust measuring distance near 164mm!\n";

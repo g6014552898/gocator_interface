@@ -14,6 +14,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/filter.h>
+#include <pcl/filters/conditional_removal.h>
 
 //constants
 // sensor IP address
@@ -28,6 +29,9 @@
 #define INVALID_RANGE_DOUBLE ((k64f)-DOUBLE_MAX)
 #define NM_TO_MM(VALUE) (((k64f)(VALUE))/1000000.0)
 #define UM_TO_MM(VALUE) (((k64f)(VALUE))/1000.0)
+
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
 
 namespace Gocator3200
 {

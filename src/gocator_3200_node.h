@@ -28,10 +28,6 @@
 enum RunMode {SNAPSHOT=0,PUBLISHER,SAVER};
 enum KeyMode {WAIT=0,SAVE,DISCARD};
 
-typedef pcl::PointXYZ PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
-
-
 /** \brief Gocator3200 ROS wrapping class
  * 
  * Gocator3200 ROS wrapping class
