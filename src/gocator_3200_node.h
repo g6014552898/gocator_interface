@@ -26,6 +26,7 @@
 
 //enum run mode
 enum RunMode {SNAPSHOT=0,PUBLISHER,SAVER};
+enum KeyMode {WAIT=0,SAVE,DISCARD};
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -116,6 +117,8 @@ class Gocator3200Node
         void saveShot();
 
         boost::shared_ptr<int> save_request;
+
+        boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 
     protected: 
         //snapshot request callback
