@@ -254,7 +254,7 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 					case GO_DATA_MESSAGE_TYPE_STAMP:
 					{
 						GoStampMsg stampMsg = dataObj;
-						std::cout << "Stamp Message Arriced. Count: " << GoStampMsg_Count(stampMsg) << std::endl;
+						// std::cout << "Stamp Message Arriced. Count: " << GoStampMsg_Count(stampMsg) << std::endl;
 						for (unsigned int jj = 0; jj < GoStampMsg_Count(stampMsg); jj++)
 						{
 							stamp = GoStampMsg_At(stampMsg, jj);
@@ -285,11 +285,11 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 
 
 						//Print raw cloud metadata
-						std::cout << "Surface Message Arriced." << std::endl;
-						std::cout << "\tLength: " <<  row_count << std::endl;
-						std::cout << "\tWidth: " << width << std::endl;
-						std::cout << "\tExposure: " << exposure << std::endl;
-						std::cout << "\tzOffset: " << zOffset << std::endl;
+						// std::cout << "Surface Message Arriced." << std::endl;
+						// std::cout << "\tLength: " <<  row_count << std::endl;
+						// std::cout << "\tWidth: " << width << std::endl;
+						// std::cout << "\tExposure: " << exposure << std::endl;
+						// std::cout << "\tzOffset: " << zOffset << std::endl;
 
 
 						//resize the point cloud

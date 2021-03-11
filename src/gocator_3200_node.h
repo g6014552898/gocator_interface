@@ -55,9 +55,6 @@ class Gocator3200Node
         
         //Publisher. Line markers bounding the camera field of view
         ros::Publisher fov_publisher_; 
-        
-        //A pcl point cloud, used to get data and publish it
-        PointCloudT cloud_; 
 
         //Marker message bounding the camera field of view
         visualization_msgs::Marker fov_marker_msg_;

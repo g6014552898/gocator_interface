@@ -92,14 +92,23 @@ void Gocator3200Node::publish()
 {    
     ros::Time ts;
     
+    PointCloudT::Ptr cloud (new PointCloudT);
     //Get snapshot from camera and publish the point cloud
-    if ( g3200_camera_->getSingleSnapshot(cloud_) == 1 )
+    if ( g3200_camera_->getSingleSnapshot(*cloud) == 1 )
     //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
     {
+        pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud, (int) 255, (int) 255, (int) 255);
+    
+        // Original point cloud is white
+        viewer->addPointCloud (cloud,cloud_in_color_h,"cloud_in_v1");
+        viewer->addCoordinateSystem(10);
+
         ts = ros::Time::now();
-        cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
-        cloud_.header.frame_id = frame_name_; 
-        snapshot_publisher_.publish(cloud_);
+        cloud->header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
+        cloud->header.frame_id = frame_name_; 
+        snapshot_publisher_.publish(*cloud);
+
+        viewer->removeAllPointClouds ();
     }
     else
     {
