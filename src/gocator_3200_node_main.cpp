@@ -35,8 +35,10 @@ int main(int argc, char **argv)
         break;
   
       case SAVER:
+        std::cout<<"entering saver\n";
         if (*(gocator.save_request) == 1)
         {
+          std::cout<<"entering saveShot\n";
           gocator.saveShot();
         }
         break;

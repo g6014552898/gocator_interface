@@ -262,41 +262,52 @@ void Gocator3200Node::saveShot()
 
     PointCloudT::Ptr cloud_tmp (new PointCloudT);
     //Get snapshot from camera and publish the point cloud
+    std::cout<<"ready to capture\n";
     if ( g3200_camera_->getSingleSnapshot(*cloud_tmp) == 1 )
     //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
     {   
-        pcl::visualization::PCLVisualizer viewer("Saver");
+        boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("Saver"));
         
         pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud_tmp, (int) 255, (int) 255, (int) 255);
     
         // Original point cloud is white
-        viewer.addPointCloud (cloud_tmp,cloud_in_color_h,"cloud_in_v1");
-        viewer.addCoordinateSystem(10);
+        viewer->addPointCloud (cloud_tmp,cloud_in_color_h,"cloud_in_v1");
+        viewer->addCoordinateSystem(10);
         // Register keyboard callback :
-        viewer.registerKeyboardCallback (&keyboardEventOccurred, (void*) &save_request);
+        viewer->registerKeyboardCallback (&keyboardEventOccurred, (void*) &save_request);
 
-        while (!viewer.wasStopped())
+        while (!viewer->wasStopped())
         {
             if (*save_request == 1)
             {
                 ts = ros::Time::now();
-                cloud_.header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
-                cloud_.header.frame_id = frame_name_;
+                cloud_tmp->header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
+                cloud_tmp->header.frame_id = frame_name_;
                 std::stringstream ss;
                 ss.str("");
                 ss << capture_counter_;
                 std::string path = ros::package::getPath("gocator_publisher");
-                pcl::io::savePLYFile (path + "/model/test/"+ ss.str() +".ply", cloud_); 
-                capture_counter_++;
+                std::string file_name = path + "/model/test/"+ ss.str() +".ply";
+                if( pcl::io::savePLYFile (file_name, *cloud_tmp) != 0)
+                {
+                    std::cout<<"failed to  save "<<file_name<<"\n";
+                }else{
+                    std::cout<<file_name<<" saved successflly!\n";
+                    capture_counter_++;
+                } 
             }
-            viewer.spinOnce (100);
+            viewer->spinOnce (100);
+            std::cout<<"looping\n";
         }
-        viewer.updatePointCloud (cloud_tmp, cloud_in_color_h);
-        viewer.removeAllPointClouds ();
-        viewer.close ();
+        std::cout<<"out of loop\n";
+        viewer->updatePointCloud (cloud_tmp, cloud_in_color_h);
+        viewer->removeAllPointClouds ();
+        viewer->close ();
+        std::cout<<"viewer closed\n";
     }
     else
     {
-        std::cout << "Gocator3200Node::publish(): Error with point cloud snapshot acquisition" << std::endl;
+        std::cout << "Gocator3200Node::saver(): Error with point cloud snapshot acquisition" << std::endl;
     }
+    std::cout<<"exiting saveShot\n";
 }

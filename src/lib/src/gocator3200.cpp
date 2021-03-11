@@ -327,9 +327,6 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 
 						real_data_arrived=true;
 						_p_cloud = *tmp_cloud;
-
-						std::cout<<"point  size: "<<tmp_cloud->points.size()<<std::endl;
-						std::cout<<"point  size: "<<_p_cloud.points.size()<<std::endl;
 					}
 					break;
 				}
@@ -341,6 +338,11 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 	}
 	//stop Gocator acquisition
 	this->stop();
+	if (_p_cloud.points.size() == 0)
+	{
+		std::cout<<"_p_cloud empty, may need to adjust measuring distance near 164mm!\n";
+		return (-2);
+	}
 	return 1;
 }
 
