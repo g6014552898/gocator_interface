@@ -340,10 +340,10 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 	this->stop();
 
 	PointCloudT::Ptr cloud_filtered (new PointCloudT);
-
+	double bnd = 500;
 	pcl::ConditionAnd<PointT>::Ptr range_cond(new pcl::ConditionAnd<PointT> ());
-	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::GT,-14.0)));
-	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::LT,14.0)));
+	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::GT,-bnd)));
+	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::LT,bnd)));
 	pcl::ConditionalRemoval<PointT> condrem;
 	condrem.setCondition(range_cond);
 	condrem.setInputCloud(tmp_cloud);
