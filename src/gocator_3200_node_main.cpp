@@ -9,6 +9,11 @@ int main(int argc, char **argv)
 
   //create ros wrapper object
   Gocator3200Node gocator;
+  // if (gocator.runMode()!=SAVER)
+  // {
+  //   gocator.viewer->close();
+  //   std::cout<<"viewer closing...\n";
+  // }
 
   //set node loop rate
   ros::Rate loop_rate(gocator.rate());

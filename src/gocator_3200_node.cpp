@@ -100,15 +100,15 @@ void Gocator3200Node::publish()
         pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud, (int) 255, (int) 255, (int) 255);
     
         // Original point cloud is white
-        viewer->addPointCloud (cloud,cloud_in_color_h,"cloud_in_v1");
-        viewer->addCoordinateSystem(10);
+        // viewer->addPointCloud (cloud,cloud_in_color_h,"cloud_in_v1");
+        // viewer->addCoordinateSystem(10);
 
         ts = ros::Time::now();
         cloud->header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
         cloud->header.frame_id = frame_name_; 
         snapshot_publisher_.publish(*cloud);
 
-        viewer->removeAllPointClouds ();
+        // viewer->removeAllPointClouds ();
     }
     else
     {
