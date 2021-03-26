@@ -80,7 +80,7 @@ Gocator3200Node::~Gocator3200Node()
 
 void Gocator3200Node::stop()
 {
-    std::cout<<"camera stopped\n";
+    // std::cout<<"camera stopped\n";
     g3200_camera_->stop();
     delete g3200_camera_; 
 }
@@ -97,6 +97,7 @@ bool Gocator3200Node::isRequest() const
 
 void Gocator3200Node::resetRequest()
 {
+    std::cout<<"request off!\n";
     is_request_ = false; 
 }
 
@@ -106,7 +107,7 @@ void Gocator3200Node::publish()
     
     PointCloudT::Ptr cloud (new PointCloudT);
     //Get snapshot from camera and publish the point cloud
-    if ( g3200_camera_->getSingleSnapshot(*cloud) == 1 )
+    if ( g3200_camera_->getSingleSnapshot(*cloud,z_max_,z_min_) == 1 )
     //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
     {
         pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud, (int) 255, (int) 255, (int) 255);
@@ -141,6 +142,7 @@ bool Gocator3200Node::isFovViz() const
 
 void Gocator3200Node::snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _msg)
 {
+    std::cout<<"request received!\n";
     is_request_ = true;
 }
                 
