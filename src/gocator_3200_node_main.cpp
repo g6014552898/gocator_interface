@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         break;
   
       case SAVER:
-        std::cout<<"entering saveShot\n";
+        // std::cout<<"entering saveShot\n";
         gocator.saveShot();
         break;
         
@@ -57,6 +57,8 @@ int main(int argc, char **argv)
     //relax to fit output rate
     loop_rate.sleep();
   }
+  gocator.stop();
+
   //exit program
   return 0;
 }

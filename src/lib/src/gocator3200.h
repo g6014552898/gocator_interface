@@ -162,6 +162,8 @@ class Device
 		 **/
 		int getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud);
 
+		int getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud,double,double);
+
         /** \brief Get a single FAKE snapshot
          *
          * JUST FOR DEBUGGING WHEN NO CAMERA AVAILABLE

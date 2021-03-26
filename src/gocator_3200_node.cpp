@@ -4,7 +4,7 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event,
                        void* request_void)
 {
     boost::shared_ptr<int> request = *static_cast<boost::shared_ptr<int> *> (request_void);
-    std::cout<<"request b4 keyboard"<<*request<<"\n";
+    // std::cout<<"request b4 keyboard"<<*request<<"\n";
     std::string keyPressed = event.getKeySym ();
     if (event.keyDown ())
     {
@@ -18,7 +18,7 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event,
             *request = WAIT;
         }
     }
-    std::cout<<"request after keyboard"<<*request<<"\n";
+    // std::cout<<"request after keyboard"<<*request<<"\n";
 };
 
 Gocator3200Node::Gocator3200Node() :
@@ -45,12 +45,19 @@ Gocator3200Node::Gocator3200Node() :
     //Read params from the yaml configuration file
     std::string ip_addr;
     int int_param;
+    capture_counter_ = 1;
+    z_max_ = 500;
+    z_min_ = -500;
     nh_.getParam("ip_address", ip_addr);
     nh_.getParam("run_mode", int_param); this->run_mode_ = (RunMode)int_param;
     nh_.getParam("rate", this->rate_);
     nh_.getParam("frame_name", this->frame_name_);
     nh_.getParam("exposure", this->capture_params_.exposure_time_);
     nh_.getParam("spacing", this->capture_params_.spacing_interval_);
+    nh_.getParam("capture_counter", this->capture_counter_);
+    nh_.getParam("z_max", this->z_max_);
+    nh_.getParam("z_min", this->z_min_);
+    
     fov_viz_ = true; //TODO: get it from param server
     
     //create a device object
@@ -59,8 +66,6 @@ Gocator3200Node::Gocator3200Node() :
     //configure according yaml params
     g3200_camera_->configure(capture_params_);
 
-    capture_counter_ = 1;
-    
     //print
     std::cout << "ROS node Setings: " << std::endl; 
     std::cout << "\trun mode: \t" << run_mode_ << std::endl;
@@ -70,6 +75,13 @@ Gocator3200Node::Gocator3200Node() :
 
 Gocator3200Node::~Gocator3200Node()
 {
+    delete g3200_camera_; 
+}
+
+void Gocator3200Node::stop()
+{
+    std::cout<<"camera stopped\n";
+    g3200_camera_->stop();
     delete g3200_camera_; 
 }
 
@@ -157,10 +169,11 @@ void Gocator3200Node::saveShot()
     *save_request = WAIT;
     ros::Time ts;
     bool is_quit = false;
+    bool is_saved = false;
     PointCloudT::Ptr cloud_tmp (new PointCloudT);
     //Get snapshot from camera and publish the point cloud
-    std::cout<<"ready to capture\n";
-    if ( g3200_camera_->getSingleSnapshot(*cloud_tmp) == 1 )
+    
+    if ( g3200_camera_->getSingleSnapshot(*cloud_tmp,z_max_,z_min_) == 1)
     //if ( g3200_camera_.getSingleSnapshotFake(cloud_) == 1 )
     {   
         pcl::visualization::PointCloudColorHandlerCustom<PointT> cloud_in_color_h (cloud_tmp, (int) 255, (int) 255, (int) 255);
@@ -177,28 +190,31 @@ void Gocator3200Node::saveShot()
             {
                 case SAVE:
                 {
-                    ts = ros::Time::now();
-                    cloud_tmp->header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
-                    cloud_tmp->header.frame_id = frame_name_;
-                    std::stringstream ss;
-                    ss.str("");
-                    ss << capture_counter_;
-                    std::string path = ros::package::getPath("gocator_publisher");
-                    std::string file_name = path + "/model/test/"+ ss.str() +".ply";
-                    if( pcl::io::savePLYFileASCII (file_name, *cloud_tmp) != 0)
+                    if (!is_saved)
                     {
-                        std::cout<<"failed to  save "<<file_name<<"\n";
-                    }else{
-                        std::cout<<file_name<<" saved successflly!\n";
-                        capture_counter_++;
-                        *save_request = WAIT;
-                        is_quit = true;
+                        ts = ros::Time::now();
+                        cloud_tmp->header.stamp = (pcl::uint64_t)(ts.toSec()*1e6); //TODO: should be set by the Gocator3200::Device class
+                        cloud_tmp->header.frame_id = frame_name_;
+                        std::stringstream ss;
+                        ss.str("");
+                        ss << capture_counter_;
+                        std::string path = ros::package::getPath("gocator_publisher");
+                        std::string file_name = path + "/model/test/"+ ss.str() +".ply";
+                        if( pcl::io::savePLYFileASCII (file_name, *cloud_tmp) != 0)
+                        {
+                            std::cout<<"failed to  save "<<file_name<<"\n";
+                        }else{
+                            std::cout<<file_name<<" saved successflly!\n";
+                            capture_counter_++;
+                            *save_request = WAIT;
+                            is_saved = true;
+                        }
                     }
                     break;
                 }
 
                 case DISCARD:
-                    std::cout<<"result is discarded\n";
+                    std::cout<<"next shot\n";
                     is_quit = true;
                     break;
 
@@ -207,7 +223,7 @@ void Gocator3200Node::saveShot()
             }
             viewer->spinOnce (100);
         }
-        std::cout<<"out of loop\n";
+        // std::cout<<"out of loop\n";
         viewer->removeAllPointClouds ();
     }
     else

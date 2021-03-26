@@ -161,7 +161,7 @@ int Gocator3200::Device::configure(const CaptureParams & _configs)
 int Gocator3200::Device::start()
 {
 	kStatus status;
-
+	std::cout<<"device start\n";
 	// start Gocator sensor
 	if ((status = GoSystem_Start(go_system_)) != kOK)
 	{
@@ -182,7 +182,7 @@ int Gocator3200::Device::start()
 int Gocator3200::Device::stop()
 {
 	kStatus status;
-
+	std::cout<<"device off\n";
 	// stop Gocator sensor
 	if ((status = GoSystem_Stop(go_system_)) != kOK)
 	{
@@ -214,6 +214,149 @@ int Gocator3200::Device::stopAquisitionThread()
 int Gocator3200::Device::getCurrentSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud) const
 {
 
+}
+
+int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud,double z_max,double z_min)
+{
+	pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	GoDataSet dataset = kNULL;
+	GoStamp *stamp = kNULL;
+	GoDataMsg dataObj;
+	GoMeasurementData *measurementData = kNULL;
+
+	//start Gocator acquisition
+	this->start();
+	bool real_data_arrived = false;
+	while (!real_data_arrived)
+	{
+		if (GoSystem_ReceiveData(go_system_, &dataset, RECEIVE_TIMEOUT) != kOK)
+		{
+			//stop Gocator acquisition
+			this->stop();
+			//no message after timeout
+			std::cout << "Error: No data received during the waiting period" << std::endl;
+			return -1;
+		}
+		else
+		{
+			//std::cout << "Data message received: " << std::endl;
+			//std::cout << "Dataset count: " << GoDataSet_Count(dataset) << std::endl;
+
+			// Loop for each data item in the dataset object
+			for (unsigned int ii = 0; ii < GoDataSet_Count(dataset); ii++)
+			{
+				//get the data item ii
+				dataObj = GoDataSet_At(dataset, ii);
+
+				//switch according the type of message
+				switch(GoDataMsg_Type(dataObj))
+				{
+					case GO_DATA_MESSAGE_TYPE_STAMP:
+					{
+						GoStampMsg stampMsg = dataObj;
+						// std::cout << "Stamp Message Arriced. Count: " << GoStampMsg_Count(stampMsg) << std::endl;
+						for (unsigned int jj = 0; jj < GoStampMsg_Count(stampMsg); jj++)
+						{
+							stamp = GoStampMsg_At(stampMsg, jj);
+							//std::cout << "\tTimestamp: " << stamp->timestamp << std::endl;
+							//std::cout << "\tEncoder: " << stamp->encoder << std::endl;
+							//std::cout << "\tFrame index: " << stamp->frameIndex << std::endl;
+						}
+					}
+					break;
+
+					case GO_DATA_MESSAGE_TYPE_SURFACE:
+					{
+						//cast to GoSurfaceMsg
+						GoSurfaceMsg surfaceMsg = dataObj;
+
+						//Get general data of the surface
+						unsigned int row_count = GoSurfaceMsg_Length(surfaceMsg);
+						unsigned int width = GoSurfaceMsg_Width(surfaceMsg);
+						unsigned int exposure = GoSurfaceMsg_Exposure(surfaceMsg);
+
+						//get offsets and resolutions
+						double xResolution = NM_TO_MM(GoSurfaceMsg_XResolution(surfaceMsg));
+						double yResolution = NM_TO_MM(GoSurfaceMsg_YResolution(surfaceMsg));
+						double zResolution = NM_TO_MM(GoSurfaceMsg_ZResolution(surfaceMsg));
+						double xOffset = UM_TO_MM(GoSurfaceMsg_XOffset(surfaceMsg));
+						double yOffset = UM_TO_MM(GoSurfaceMsg_YOffset(surfaceMsg));
+						double zOffset = UM_TO_MM(GoSurfaceMsg_ZOffset(surfaceMsg));
+
+
+						//Print raw cloud metadata
+						// std::cout << "Surface Message Arriced." << std::endl;
+						// std::cout << "\tLength: " <<  row_count << std::endl;
+						// std::cout << "\tWidth: " << width << std::endl;
+						// std::cout << "\tExposure: " << exposure << std::endl;
+						// std::cout << "\tzOffset: " << zOffset << std::endl;
+
+
+						//resize the point cloud
+						tmp_cloud->height = row_count;
+						tmp_cloud->width = width;
+						tmp_cloud->resize(row_count*width);
+
+						std::vector<int> index;
+						//run over all rows
+						for (unsigned int ii = 0; ii < row_count; ii++)
+						{
+							//get the pointer to row
+							short *data = GoSurfaceMsg_RowAt(surfaceMsg,ii);
+
+							//run over the width of row ii
+							for (unsigned int jj = 0; jj < width; jj++)
+							{
+								//set xy in meters. x component inverted to fulfill right-handed frame (Gocator is left-handed!)
+								tmp_cloud->points.at(ii*width+jj).x = -1*(xOffset + xResolution*jj);
+								tmp_cloud->points.at(ii*width+jj).y =  1*(yOffset + yResolution*ii);
+
+								//set z
+								if (data[jj] != INVALID_RANGE_16BIT )
+								{
+									tmp_cloud->points.at(ii*width+jj).z = 1*(zOffset + zResolution*data[jj]);
+									index.push_back(ii*width+jj);
+								}
+								else
+									tmp_cloud->points.at(ii*width+jj).z = 1*(INVALID_RANGE_DOUBLE);
+
+								// std::cout<<" "<<tmp_cloud.points.at(ii*width+jj).x<<" "<<tmp_cloud.points.at(ii*width+jj).y
+								// <<" "<<tmp_cloud.points.at(ii*width+jj).z<<" "<<INVALID_RANGE_DOUBLE<<std::endl;
+							}
+						}
+
+						real_data_arrived=true;
+						
+					}
+					break;
+				}
+			}
+		}
+
+		//destroys received message
+		GoDestroy(dataset);
+	}
+	//stop Gocator acquisition
+	this->stop();
+
+	PointCloudT::Ptr cloud_filtered (new PointCloudT);
+	// double bnd = 500;
+	pcl::ConditionAnd<PointT>::Ptr range_cond(new pcl::ConditionAnd<PointT> ());
+	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::GT,z_min)));
+	range_cond->addComparison(pcl::FieldComparison<PointT>::ConstPtr (new pcl::FieldComparison<PointT>("z",pcl::ComparisonOps::LT,z_max)));
+	pcl::ConditionalRemoval<PointT> condrem;
+	condrem.setCondition(range_cond);
+	condrem.setInputCloud(tmp_cloud);
+	condrem.setKeepOrganized(false);
+	condrem.filter(*cloud_filtered);
+
+	_p_cloud = *cloud_filtered;
+	if (_p_cloud.points.size() == 0)
+	{
+		std::cout<<"_p_cloud empty, may need to adjust measuring distance near 164mm!\n";
+		return (-2);
+	}
+	return 1;
 }
 
 int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud)

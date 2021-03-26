@@ -72,6 +72,8 @@ class Gocator3200Node
         bool fov_viz_; // enable field of view visualization
 
         int capture_counter_;
+        double z_max_;
+        double z_min_;
                 
         //camera device parameters
         Gocator3200::CaptureParams capture_params_;
@@ -82,6 +84,8 @@ class Gocator3200Node
         
         //destructor
         ~Gocator3200Node();
+
+        void stop();
         
         //returns run_mode_
         RunMode runMode() const;
