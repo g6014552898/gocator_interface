@@ -15,13 +15,13 @@ rate: 10
 frame_name: "gocator_point_cloud"
 
 #camera exposure [us]
-exposure: 350
+exposure: 2000
 
 #camera point cloud grid spacing [mm]
 spacing: 0.05
 
 z_max: 500
 
-z_min: -0
+z_min: -500
 
 capture_counter: 1
