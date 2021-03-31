@@ -22,6 +22,6 @@ spacing: 0.05
 
 z_max: 500
 
-z_min: -500
+z_min: -50
 
 capture_counter: 1
