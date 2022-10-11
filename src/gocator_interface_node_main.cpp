@@ -1,14 +1,14 @@
 //ros dependencies
-#include "gocator_3200_node.h"
+#include "gocator_interface_node.h"
 
 //node main
 int main(int argc, char **argv)
 {
   //init ros
-  ros::init(argc, argv, "gocator_3200_node");
+  ros::init(argc, argv, "gocator_interface_node");
 
   //create ros wrapper object
-  Gocator3200Node gocator;
+  Gocator_interfaceNode gocator;
   // if (gocator.runMode()!=SAVER)
   // {
   //   gocator.viewer->close();

@@ -1,5 +1,5 @@
-#ifndef Gocator3200_H
-#define Gocator3200_H
+#ifndef Gocator_interface_H
+#define Gocator_interface_H
 
 //std c/c++
 #include <iostream>
@@ -33,7 +33,7 @@
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
-namespace Gocator3200
+namespace Gocator_interface
 {
 
 //status  values

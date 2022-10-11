@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 
-<!-- Launches gocator_3200 acquisition component, and visualization according rviz param  -->
+<!-- Launches gocator_interface acquisition component, and visualization according rviz param  -->
 
 <launch>
-
     <!-- User Args  -->
-    <arg name="rviz" default="true" doc="rviz visualization or not"/>
-    <arg name="model_tf" default="false" doc="3D model visualization and tf"/>
-    <arg name="config_file" default="$(find gocator_3200)/config/gocator_3200_snapshot.yaml" doc="3D model visualization and tf"/>
-    <arg name="model" default="gocator_3109_example" doc="Select among available models: gocator_3109_example or gocator_example" />
+    <arg name="model_tf" default="true" doc="3D model visualization and tf"/>
+    <arg name="config_file" default="$(find gocator_interface)/config/gocator_interface.yaml" doc="3D model visualization and tf"/>
+    <arg name="model" default="GOCATOR-3520" doc="Select a model" />
 
     <!--3D model as a robot robot description and tf-->
     <group if="$(arg model_tf)">
@@ -16,7 +14,7 @@
         <!-- Load robot description -->
         <param 
             name="robot_description" 
-            command="$(find xacro)/xacro --inorder $(find gocator_3200)/urdf/$(arg model).urdf.xacro"/>
+            command="$(find xacro)/xacro --inorder $(find gocator_interface)/urdf/$(arg model).urdf.xacro"/>
             
         <!-- Run joint state publisher (Gets robot_description from parameter server)-->
         <node 
@@ -34,16 +32,14 @@
         </node>
     </group>
     
-    <!-- goactor_3200 node -->
+    <!-- goactor_interface node -->
     <node   
-        pkg="gocator_3200"
-        type="gocator_3200"
-        name="gocator_3200"
+        pkg="gocator_interface"
+        type="gocator_interface"
+        name="gocator_interface"
         output="screen">
-<!--         <rosparam command="load" file="$(find gocator_3200)/config/gocator_3200_params.yaml"/> -->
         <rosparam command="load" file="$(arg config_file)"/>
     </node>      
 
     
 </launch>
-

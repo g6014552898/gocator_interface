@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>gocator_3200</name>
-    <version>0.0.0</version>
+  <name>gocator_interface</name>
+    <version>1.0.0</version>
     <description>
-       Point cloud acquisition from a Gocator 3200 camera.
+       Point cloud acquisition from a Gocator camera.
     </description>
 
     <!-- One maintainer tag required, multiple allowed, one person per tag --> 
@@ -13,7 +13,7 @@
     <license>BSD</license>
 
     <!-- Url tags are optional, but mutiple are allowed, one per tag -->
-    <url type="website">https://github.com/beta-robots/gocator_3200</url>
+    <url type="website">https://github.com/g6014552898/gocator_interface</url>
 
     <!-- Author tags are optional, mutiple are allowed, one per tag -->
     <author email="andreu@beta-robots.com">Andreu Corominas-Murtra</author>

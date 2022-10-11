@@ -1,6 +1,6 @@
-#include "gocator3200.h"
+#include "gocator_interface.h"
 
-Gocator3200::Device::Device(const std::string & _ip_address)
+Gocator_interface::Device::Device(const std::string & _ip_address)
 {
 	kStatus status;
 	kIpAddress ipAddress;
@@ -114,7 +114,7 @@ Gocator3200::Device::Device(const std::string & _ip_address)
 	device_params_.print();
 }
 
-Gocator3200::Device::~Device()
+Gocator_interface::Device::~Device()
 {
 	kStatus status;
 
@@ -128,7 +128,7 @@ Gocator3200::Device::~Device()
 	std::cout << "~Device(). Gocator Sensor Stopped and Device Object Destroyed." << std::endl;
 }
 
-int Gocator3200::Device::configure(const CaptureParams & _configs)
+int Gocator_interface::Device::configure(const CaptureParams & _configs)
 {
 	kStatus status;
 
@@ -158,7 +158,7 @@ int Gocator3200::Device::configure(const CaptureParams & _configs)
 	return 1;
 }
 
-int Gocator3200::Device::start()
+int Gocator_interface::Device::start()
 {
 	kStatus status;
 	std::cout<<"device start\n";
@@ -179,7 +179,7 @@ int Gocator3200::Device::start()
 	return 1;
 }
 
-int Gocator3200::Device::stop()
+int Gocator_interface::Device::stop()
 {
 	kStatus status;
 	std::cout<<"device off\n";
@@ -200,23 +200,23 @@ int Gocator3200::Device::stop()
 	return 1;
 }
 
-int Gocator3200::Device::startAquisitionThread()
+int Gocator_interface::Device::startAquisitionThread()
 {
 
 
 }
 
-int Gocator3200::Device::stopAquisitionThread()
+int Gocator_interface::Device::stopAquisitionThread()
 {
 
 }
 
-int Gocator3200::Device::getCurrentSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud) const
+int Gocator_interface::Device::getCurrentSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud) const
 {
 
 }
 
-int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud,double z_max,double z_min)
+int Gocator_interface::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud,double z_max,double z_min)
 {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	GoDataSet dataset = kNULL;
@@ -340,7 +340,7 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 	return 1;
 }
 
-int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud)
+int Gocator_interface::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud)
 {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	GoDataSet dataset = kNULL;
@@ -483,7 +483,7 @@ int Gocator3200::Device::getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_c
 	return 1;
 }
 
-int Gocator3200::Device::getSingleSnapshotFake(pcl::PointCloud<pcl::PointXYZ> & _p_cloud)
+int Gocator_interface::Device::getSingleSnapshotFake(pcl::PointCloud<pcl::PointXYZ> & _p_cloud)
 {
 	unsigned int nr=5;
 	unsigned int nc=10;
@@ -510,7 +510,7 @@ int Gocator3200::Device::getSingleSnapshotFake(pcl::PointCloud<pcl::PointXYZ> & 
 	return 1;
 }
 
-void Gocator3200::Device::getDeviceHealth(std::string & _health_str) const
+void Gocator_interface::Device::getDeviceHealth(std::string & _health_str) const
 {
 	//local variables
 	GoDataSet health_data = kNULL;
@@ -539,7 +539,7 @@ void Gocator3200::Device::getDeviceHealth(std::string & _health_str) const
 	_health_str = sstr.str();
 }
 
-void Gocator3200::Device::getTemperature(double & _internal_temp, double & _projector_temp, double & _laser_temp) const
+void Gocator_interface::Device::getTemperature(double & _internal_temp, double & _projector_temp, double & _laser_temp) const
 {
 	//local variables
 	GoDataSet health_data = kNULL;
@@ -575,12 +575,12 @@ void Gocator3200::Device::getTemperature(double & _internal_temp, double & _proj
 
 }
 
-int Gocator3200::Device::close()
+int Gocator_interface::Device::close()
 {
 
 }
 
-void Gocator3200::Device::printDeviceData() const
+void Gocator_interface::Device::printDeviceData() const
 {
 
 }

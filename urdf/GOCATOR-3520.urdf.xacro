@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="GOCATOR" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <material name="Gocator/Black">
         <color rgba="0.1 0.1 0.1 1.0"/>
     </material>
 
     <!-- Just the bounding box of the gocator -->
-    <xacro:macro name="gocator_3110" params="parent name">
+    <xacro:macro name="GOCATOR-3520" params="parent name *origin">
         <joint name="${parent}_${name}_anchor" type="fixed">
             <parent link="${parent}" />
             <child link="${name}" />
@@ -14,18 +14,16 @@
 
         <link name="${name}">
             <visual>
-                <!-- <origin xyz="0 0 0.05" rpy="0 0 0"/> -->
-                <origin xyz="0 0 0.0623" rpy="3.141592 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <!-- <box size="0.156 0.05 0.1"/> -->
-                    <mesh filename="package://gocator_3100/urdf/gocator_3110.stl" scale="0.001 0.001 0.001"/>
+                    <mesh filename="package://gocator_interface/urdf/GOCATOR-3520.stl" scale="0.001 0.001 0.001"/>
                 </geometry>
                 <material name="Gocator/Black"/>
             </visual>
             <collision>
-                <origin xyz="0 0 0.05" rpy="0 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="0.310 0.10 0.1"/>
+                    <mesh filename="package://gocator_interface/urdf/GOCATOR-3520.stl" scale="0.001 0.001 0.001"/>
                 </geometry>
             </collision>
         </link>
@@ -33,7 +31,7 @@
         <joint name="${name}_point_cloud_anchor" type="fixed" >
             <parent link="${name}"/>
             <child link="${name}_point_cloud"/>
-            <origin xyz="0 0 ${0.0623+0.150+0.05}" rpy="0 3.141592 -1.570796"/>  <!--27.9cm from parent -->
+            <origin xyz="0 0 0.167" rpy="0 0 0"/>
         </joint>       
 
         <link name="${name}_point_cloud"/>
@@ -42,5 +40,8 @@
             <static>true</static>
         </gazebo>
     </xacro:macro>
-
+   <link name="world" />
+  <xacro:GOCATOR-3520 parent="world" name="gocator">
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </xacro:GOCATOR-3520>
 </robot>
