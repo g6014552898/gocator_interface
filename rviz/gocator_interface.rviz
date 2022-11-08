@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /Status1
         - /RobotModel1/Links1
       Splitter Ratio: 0.5
@@ -25,7 +26,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -83,8 +84,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 74.69499969482422
-        Min Value: -19.149999618530273
+        Max Value: 0.48652929067611694
+        Min Value: 0.39091357588768005
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -108,11 +109,35 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        gocator:
+          Value: true
+        gocator_point_cloud:
+          Value: true
+        world:
+          Value: false
+      Marker Alpha: 1
+      Marker Scale: 0.10000000149011612
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world:
+          gocator:
+            gocator_point_cloud:
+              {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: gocator_point_cloud
+    Fixed Frame: gocator
     Frame Rate: 30
   Name: root
   Tools:
@@ -136,7 +161,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.977402687072754
+      Distance: 0.4358570873737335
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -144,17 +169,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.0013963135425001383
+        Y: 0.07626230269670486
+        Z: 0.14090417325496674
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.11539846658706665
+      Pitch: -1.089796781539917
       Target Frame: <Fixed Frame>
-      Yaw: 1.5353972911834717
+      Yaw: 1.5753883123397827
     Saved: ~
 Window Geometry:
   Displays:

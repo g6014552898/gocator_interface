@@ -9,10 +9,10 @@
     <xacro:macro name="GOCATOR-3520" params="parent name *origin">
         <joint name="${parent}_${name}_anchor" type="fixed">
             <parent link="${parent}" />
-            <child link="${name}" />
+            <child link="${name}_link" />
         </joint>
 
-        <link name="${name}">
+        <link name="${name}_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
@@ -29,19 +29,15 @@
         </link>
         
         <joint name="${name}_point_cloud_anchor" type="fixed" >
-            <parent link="${name}"/>
+            <parent link="${name}_link"/>
             <child link="${name}_point_cloud"/>
-            <origin xyz="0 0 0.167" rpy="0 0 0"/>
-        </joint>       
+            <origin xyz="0 0 ${0.075+0.203+0.167}" rpy="3.141592 0 1.570796"/>
+        </joint>
 
         <link name="${name}_point_cloud"/>
             
-        <gazebo reference="${name}">
+        <gazebo reference="GOCATOR-3520">
             <static>true</static>
         </gazebo>
     </xacro:macro>
-   <link name="world" />
-  <xacro:GOCATOR-3520 parent="world" name="gocator">
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-  </xacro:GOCATOR-3520>
 </robot>

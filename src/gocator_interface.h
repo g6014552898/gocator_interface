@@ -9,6 +9,9 @@
 
 //GoSdk
 #include <GoSdk/GoSdk.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
 
 //PCL
 #include <pcl/point_types.h>
@@ -17,16 +20,12 @@
 #include <pcl/filters/conditional_removal.h>
 
 //constants
-// sensor IP address
-#define SENSOR_IP "192.168.1.10"
-// timeout for snapshot acquisition
-#define RECEIVE_TIMEOUT 20000000
-// gocator transmits range data as 16-bit signed integers. 0x8000 signifies invalid range data.
-#define INVALID_RANGE_16BIT ((signed short)0x8000)
-// 64-bit double - largest positive value.
-#define DOUBLE_MAX ((k64f)1.7976931348623157e+308)
-// floating point value to represent invalid range data.
-#define INVALID_RANGE_DOUBLE ((k64f)-DOUBLE_MAX)
+#define RECEIVE_TIMEOUT         (20000000)
+#define INVALID_RANGE_16BIT     ((signed short)0x8000)          // gocator transmits range data as 16-bit signed integers. 0x8000 signifies invalid range data.
+#define DOUBLE_MAX              ((k64f)1.7976931348623157e+308) // 64-bit double - largest positive value.
+#define INVALID_RANGE_DOUBLE    ((k64f)-DOUBLE_MAX)             // floating point value to represent invalid range data.
+#define SENSOR_IP               "192.168.1.10"
+
 #define NM_TO_MM(VALUE) (((k64f)(VALUE))/1000000.0)
 #define UM_TO_MM(VALUE) (((k64f)(VALUE))/1000.0)
 
@@ -87,7 +86,7 @@ class Device
 		kAssembly go_api_;
 		GoSystem go_system_;
 		GoSensor go_sensor_;
-        GoSetup go_setup_;
+    GoSetup go_setup_;
 		GoDataSet go_dataset_;
 		GoStamp *go_stamp_ptr_;
 
@@ -162,35 +161,26 @@ class Device
 		 **/
 		int getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud);
 
-		int getSingleSnapshot(pcl::PointCloud<pcl::PointXYZ> & _p_cloud,double,double);
+    /** \brief Get data
+     *
+     * Set parameters on web controller, and get whatever data the camera send back.
+     *
+     **/
+    int getData();
 
-        /** \brief Get a single FAKE snapshot
-         *
-         * JUST FOR DEBUGGING WHEN NO CAMERA AVAILABLE
-         *
-         **/
-        int getSingleSnapshotFake(pcl::PointCloud<pcl::PointXYZ> & _p_cloud);
+    /** \brief Returns all health data as a string
+     *
+     * Returns all health data as a string
+     *
+     **/
+    void getDeviceHealth(std::string & _health_str) const;
 
-        /** \brief Get data
-         *
-         * Set parameters on web controller, and get whatever data the camera send back.
-         *
-         **/
-        int getData();
-
-        /** \brief Returns all health data as a string
-         *
-         * Returns all health data as a string
-         *
-         **/
-        void getDeviceHealth(std::string & _health_str) const;
-
-        /** \brief Returns three device temperatures
-         *
-         * Returns three device temperatures: internal, projector and laser
-         *
-         **/
-        void getTemperature(double & _internal_temp, double & _projector_temp, double & _laser_temp) const;
+    /** \brief Returns three device temperatures
+     *
+     * Returns three device temperatures: internal, projector and laser
+     *
+     **/
+    void getTemperature(double & _internal_temp, double & _projector_temp, double & _laser_temp) const;
 
 		/** \brief Close the connection to a physical device
 		 *

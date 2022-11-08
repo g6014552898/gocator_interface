@@ -9,11 +9,6 @@ int main(int argc, char **argv)
 
   //create ros wrapper object
   Gocator_interfaceNode gocator;
-  // if (gocator.runMode()!=SAVER)
-  // {
-  //   gocator.viewer->close();
-  //   std::cout<<"viewer closing...\n";
-  // }
 
   //set node loop rate
   ros::Rate loop_rate(gocator.rate());
@@ -40,8 +35,11 @@ int main(int argc, char **argv)
         break;
   
       case SAVER:
-        // std::cout<<"entering saveShot\n";
-        gocator.saveShot();
+        if ( gocator.isRequest() )
+        {
+          gocator.resetRequest();
+          gocator.publish(); 
+        }
         break;
         
       default:

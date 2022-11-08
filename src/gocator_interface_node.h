@@ -17,6 +17,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl_conversions/pcl_conversions.h> //conversions from/to PCL/ROS
 #include <std_msgs/Empty.h> //snapshot request
+#include <std_msgs/String.h> //saveshot request
 #include <visualization_msgs/Marker.h> //publish bounds of gocator field of view
 // #include "gocator_interface/PointCloudAsService.h" //custom "snapshot" service
 // #include <sensor_msgs/PointCloud2.h> 
@@ -26,17 +27,7 @@
 
 //enum run mode
 enum RunMode {SNAPSHOT=0,PUBLISHER,SAVER};
-enum KeyMode {WAIT=0,SAVE,DISCARD};
 
-/** \brief Gocator_interface ROS wrapping class
- * 
- * Gocator_interface ROS wrapping class
- * 
- * Two running modes:
- *    * Snapshot upon request
- *    * Continuous point cloud publisher (not yet implemented) 
- * 
- **/
 class Gocator_interfaceNode
 {
     protected:
@@ -49,6 +40,9 @@ class Gocator_interfaceNode
         
         //Subscriber. Snapshots requests arrive to this topic as an std_msgs::Empty
         ros::Subscriber snapshot_request_;
+        
+        //Subscriber. Saveshots requests arrive to this topic as an std_msgs::String
+        ros::Subscriber saveshot_request_;
         
         //Publisher. Snapshots are published through this topic
         ros::Publisher snapshot_publisher_; 
@@ -75,6 +69,8 @@ class Gocator_interfaceNode
         double z_max_;
         double z_min_;
                 
+        std::string save_path;
+        
         //camera device parameters
         Gocator_interface::CaptureParams capture_params_;
         
@@ -111,15 +107,12 @@ class Gocator_interfaceNode
         //Service callback implementing the point cloud snapshot
         //bool pointCloudSnapshotService(gocator_interface::PointCloudAsService::Request  & _request, gocator_interface::PointCloudAsService::Response & _reply);
         
-        void saveShot();
-
-        boost::shared_ptr<int> save_request;
-
-        boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+        bool save_request;
 
     protected: 
         //snapshot request callback
         void snapshotRequestCallback(const std_msgs::Empty::ConstPtr& _msg);
+        void saveshotRequestCallback(const std_msgs::String::ConstPtr& _msg);
                 
 };
 #endif
